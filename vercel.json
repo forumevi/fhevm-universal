@@ -2,11 +2,11 @@
   "build": {
     "env": {
       "NODE_VERSION": "20",
-      "PNPM_VERSION": "8.15.8",
+      "PNPM_VERSION": "9.11.0",
       "NPM_CONFIG_REGISTRY": "https://registry.npmjs.org/"
     }
   },
-  "installCommand": "corepack enable pnpm && pnpm install --prefer-offline",
-  "buildCommand": "pnpm -w build",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "pnpm build",
   "outputDirectory": "examples/nextjs-showcase/.next"
 }
