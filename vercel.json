@@ -6,7 +6,7 @@
       "NPM_CONFIG_REGISTRY": "https://registry.npmjs.org/"
     }
   },
-  "installCommand": "corepack enable pnpm && pnpm install --frozen-lockfile",
+  "installCommand": "corepack enable pnpm && pnpm install",
   "buildCommand": "pnpm -w build",
   "outputDirectory": "examples/nextjs-showcase/.next"
 }
