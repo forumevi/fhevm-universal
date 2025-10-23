@@ -2,11 +2,10 @@
   "build": {
     "env": {
       "NODE_VERSION": "20",
-      "PNPM_VERSION": "9.11.0",
       "NPM_CONFIG_REGISTRY": "https://registry.npmjs.org/"
     }
   },
-  "installCommand": "pnpm install --no-frozen-lockfile",
+  "installCommand": "npm install",
   "buildCommand": "pnpm build",
   "outputDirectory": "examples/nextjs-showcase/.next"
 }
