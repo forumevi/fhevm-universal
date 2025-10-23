@@ -1,0 +1,12 @@
+{
+  "build": {
+    "env": {
+      "NODE_VERSION": "20",
+      "PNPM_VERSION": "9.12.0",
+      "NPM_CONFIG_REGISTRY": "https://registry.npmjs.org/"
+    }
+  },
+  "installCommand": "corepack enable pnpm && pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm -w build",
+  "outputDirectory": "examples/nextjs-showcase/.next"
+}
