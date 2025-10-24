@@ -1,8 +1,8 @@
 "use client";
-
 import React, { useState } from "react";
-import { ethers } from "ethers";
+import { BrowserProvider, Contract } from "ethers";
 import toast from "react-hot-toast";
+import abi from "../contracts/PrivSplit.abi.json";
 
 interface Props {
   enc: string;
@@ -14,44 +14,54 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
 
   const handleSubmit = async () => {
     try {
-      if (!window.ethereum) {
-        toast.error("MetaMask not found 🦊");
+      if (typeof window === "undefined" || !window.ethereum) {
+        toast.error("🦊 MetaMask not found!");
         return;
       }
 
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      // 🔑 Kullanıcı cüzdanını bağlamaya zorla
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+
+      const provider = new BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
-      // ✅ Örnek kontrat adresi
       const contractAddress = process.env.NEXT_PUBLIC_PRIVSPLIT_ADDRESS;
       if (!contractAddress) {
-        toast.error("Contract address missing in .env.local ⚠️");
+        toast.error("Contract address missing!");
         return;
       }
 
-      // ✅ Basit ABI (örnek fonksiyon)
-      const abi = [
-        "function submitEncrypted(string memory group, string memory payload) public returns (bool)"
-      ];
-
-      const contract = new ethers.Contract(contractAddress, abi, signer);
+      const contract = new Contract(contractAddress, abi, signer);
 
       setLoading(true);
-      toast.loading("Submitting encrypted data to blockchain... 🚀");
+      toast.loading("📡 Sending encrypted share...");
 
-      const tx = await contract.submitEncrypted(groupName, enc);
+      // örnek veri
+      const groupId = "0x" + Buffer.from(groupName).toString("hex").padEnd(64, "0");
+      const tx = await contract.submitShare(groupId, enc);
+
+      toast.success("✅ Transaction sent! Waiting for confirmation...");
       await tx.wait();
 
-      toast.dismiss();
-      toast.success("Transaction confirmed on blockchain ✅");
-
-      console.log("TX hash:", tx.hash);
+      toast.success(
+        <>
+          🎉 Transaction confirmed!<br />
+          <a
+            href={`https://etherscan.io/tx/${tx.hash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#0070f3", textDecoration: "underline" }}
+          >
+            View on Etherscan
+          </a>
+        </>
+      );
     } catch (err: any) {
-      toast.dismiss();
       console.error(err);
-      toast.error(err.message || "Transaction failed ❌");
+      toast.error(`❌ ${err.message || "Transaction failed"}`);
     } finally {
       setLoading(false);
+      toast.dismiss();
     }
   };
 
@@ -60,17 +70,17 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
       onClick={handleSubmit}
       disabled={loading}
       style={{
-        background: loading ? "#94a3b8" : "#3b82f6",
+        marginTop: "1rem",
+        backgroundColor: loading ? "#ccc" : "#0070f3",
         color: "white",
-        padding: "10px 18px",
+        padding: "10px 16px",
         border: "none",
         borderRadius: 8,
-        fontWeight: 600,
         cursor: loading ? "not-allowed" : "pointer",
-        transition: "all 0.25s ease",
+        fontSize: "1rem",
       }}
     >
-      {loading ? "⏳ Waiting for confirmation..." : "🚀 Submit to Blockchain"}
+      {loading ? "⏳ Sending..." : "🚀 Submit Encrypted Data"}
     </button>
   );
 }
