@@ -10,7 +10,6 @@ export default function WalletConnect({ onAddressChange }: { onAddressChange?: (
   useEffect(() => {
     if (typeof window === "undefined" || !window.ethereum) return;
 
-    // 🦊 MetaMask değişiklik olayları
     window.ethereum.on("accountsChanged", (accounts: string[]) => {
       const newAddr = accounts.length > 0 ? accounts[0] : null;
       setAddress(newAddr);
@@ -22,16 +21,14 @@ export default function WalletConnect({ onAddressChange }: { onAddressChange?: (
 
   const connectWallet = async () => {
     try {
-      if (typeof window === "undefined") return;
-      if (!window.ethereum) {
+      if (typeof window === "undefined" || !window.ethereum) {
         toast.error("🦊 MetaMask not found!");
         return;
       }
 
-      // 🔑 Popup garantili bağlantı
-      const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-      await provider.send("eth_requestAccounts", []); // <-- popup garantisi
-
+      // 🧩 doğrudan request (popup garantili)
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const userAddress = await signer.getAddress();
       const networkInfo = await provider.getNetwork();
@@ -43,7 +40,7 @@ export default function WalletConnect({ onAddressChange }: { onAddressChange?: (
       toast.success(`✅ Connected: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`);
     } catch (err: any) {
       console.error("Wallet connection error:", err);
-      toast.error("❌ Wallet connection failed");
+      toast.error(err.message || "❌ Wallet connection failed");
     }
   };
 
