@@ -1,14 +1,4 @@
-🚀 Next.js + ethers + FHE (Fully Homomorphic Encryption) yapısını açıklar
 
-🔐 Cüzdan bağlantısı, şifreli veri gönderimi ve mock sözleşme mantığını anlatır
-
-🧱 Kurulum ve .env.local örneğini içerir
-
-🧭 Geliştirici & deploy talimatlarını Vercel için hazırlar
-
-💬 “Demo dApp”, “Mock”, “PrivSplit” gibi proje terimlerine uygun sade dil kullanır
-
-📄 README.md (tam içerik)
 # 🔐 PrivSplit dApp (Mock)
 
 > Encrypted contribution demo using **FHE (Fully Homomorphic Encryption)** and **Ethereum wallet connection**.  
