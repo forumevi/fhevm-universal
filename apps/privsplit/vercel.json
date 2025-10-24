@@ -1,6 +1,6 @@
 {
-   "installCommand": "npm install",
-  "buildCommand": "npm run build",
+  "installCommand": "npx pnpm@8.15.8 install --no-frozen-lockfile",
+  "buildCommand": "npx pnpm@8.15.8 run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "env": {
