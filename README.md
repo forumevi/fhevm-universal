@@ -1,111 +1,102 @@
-# 🔐 FHEVM Universal — PrivSplit dApp
-> Encrypted contribution demo using **FHE (Fully Homomorphic Encryption)** and **Ethereum wallet connection**, built with **Next.js**, **ethers.js**, and **react-hot-toast**.
+# 🔐 PrivSplit dApp (Mock)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/forumevi/fhevm-universal)
+**PrivSplit** is a demo decentralized app showing how private data can be encrypted in your browser and securely sent on-chain using **Fully Homomorphic Encryption (FHE)** and wallet connection.
+
+🌐 **Live Demo:** [fhevm-universal.vercel.app](https://fhevm-universal.vercel.app)
 
 ---
 
-## 🚀 Overview
+## 🧠 What PrivSplit Demonstrates
 
-This project demonstrates how private data (like contributions) can be **encrypted locally** and securely submitted to a smart contract using **FHE (Fully Homomorphic Encryption)**.  
-It serves as a **frontend template** for privacy-preserving dApps.
+PrivSplit shows how users can participate in private contribution rounds (like DAO voting or donations) **without revealing their amount publicly**.
+
+Steps:
+1. Encrypts your input locally in the browser.  
+2. Sends the encrypted payload to a mock smart contract on the **Sepolia testnet**.  
+3. Displays the decryption simulation.
+
+---
+
+## ⚙️ How It Works
+
+1. Connect your wallet (MetaMask 🦊).  
+2. Enter your group name & contribution.  
+3. Encrypt locally — the value never leaves your browser unencrypted.  
+4. Submit the encrypted data.  
+5. Transaction opens automatically on the correct **Etherscan network** (Mainnet, Sepolia, etc.).  
 
 ---
 
 ## 🧩 Tech Stack
 
-- ⚡ **Next.js 14** – React-based full-stack framework  
-- 🦊 **ethers.js** – Ethereum wallet & contract interactions  
-- 🔥 **react-hot-toast** – Modern notification system  
-- 🧠 **FHE (Fully Homomorphic Encryption)** – Privacy layer for encrypted data  
-- 💅 **CSS-in-JS inline styles** – Simple, lightweight UI  
+| Layer | Technology |
+|-------|-------------|
+| Frontend | Next.js 14 + React 18 + TypeScript |
+| Blockchain | Ethers.js (v5) |
+| UX | react-hot-toast + framer-motion |
+| Wallet | MetaMask (EIP-1193) |
+| Hosting | Vercel |
 
 ---
 
-## 🛠️ Setup
+## 🪄 Landing Hero Component
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/forumevi/fhevm-universal.git
-   cd fhevm-universal/apps/privsplit
-   ```
+```tsx
+import { motion } from "framer-motion";
 
-2. **Install dependencies**
-   ```bash
-   pnpm install
-   ```
-
-3. **Add environment variables**
-   Create a `.env.local` file inside `apps/privsplit/` and add:
-   ```bash
-   NEXT_PUBLIC_PRIVSPLIT_ADDRESS=0xYOUR_CONTRACT_ADDRESS_HERE
-   ```
-
-4. **Run the app locally**
-   ```bash
-   pnpm dev
-   ```
-
-5. **Build for production**
-   ```bash
-   pnpm build
-   pnpm start
-   ```
-
----
-
-## 🧪 Example Workflow
-
-1. Connect your wallet (MetaMask popup appears 🦊)  
-2. Enter a “Contribution” amount (mock data for now)  
-3. Encrypt your input locally  
-4. Submit encrypted data to the contract  
-
----
-
-## 🌍 Live Demo
-
-👉 [fhevm-universal.vercel.app](https://fhevm-universal.vercel.app)
-
----
-
-## 📦 Project Structure
-
-```
-apps/
-└── privsplit/
-    ├── app/
-    │   ├── layout.tsx       # Global layout + Header
-    │   └── page.tsx         # Main app page
-    ├── components/
-    │   ├── WalletConnect.tsx
-    │   ├── SubmitEncrypted.tsx
-    │   └── Header.tsx
-    ├── contracts/
-    │   └── PrivSplit.abi.json
-    ├── package.json
-    └── tsconfig.json
+export default function Hero() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      style={{
+        background: "#f8fafc",
+        borderRadius: "12px",
+        padding: "1.5rem",
+        marginBottom: "2rem",
+        boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
+      }}
+    >
+      <h2 style={{ fontSize: "1.4rem", color: "#0f172a", marginBottom: "0.5rem" }}>
+        💡 What is PrivSplit?
+      </h2>
+      <p style={{ color: "#475569", fontSize: "0.95rem" }}>
+        PrivSplit is a decentralized demo showing how encrypted values can be securely transmitted
+        to blockchain without revealing user data. You can safely test on the Sepolia testnet — no real funds needed.
+      </p>
+    </motion.div>
+  );
+}
 ```
 
 ---
 
-## 🧠 Future Ideas
+## 🚀 Local Setup
 
-- ✅ Add **real FHE encryption** client-side  
-- 🌐 Deploy **onchain contract** for live testing  
-- 💬 Add support for multiple contribution groups  
-- 🔍 Show transaction history with Etherscan links  
+```bash
+git clone https://github.com/forumevi/fhevm-universal.git
+cd fhevm-universal/apps/privsplit
+pnpm install
+pnpm dev
+```
 
----
-
-## 🧑‍💻 Author
-
-**ForumEvi Labs**  
-Building open, privacy-first Web3 applications.  
-🌐 [forumevi](https://forumevi.com)
+Ensure you have Node.js ≥18 and MetaMask installed.
 
 ---
 
-## 🪪 License
+## 🔗 Environment Variables
 
-MIT © 2025 ForumEvi Labs
+Create `apps/privsplit/.env.local`:
+
+```bash
+NEXT_PUBLIC_PRIVSPLIT_ADDRESS=0xYourMockContractAddress
+```
+
+---
+
+## 📜 License
+
+MIT © 2025 — for educational & experimental purposes.
+
+> “Encrypt locally, commit globally.” — PrivSplit 🧩
