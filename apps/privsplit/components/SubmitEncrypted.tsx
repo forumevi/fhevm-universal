@@ -3,73 +3,74 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import toast from "react-hot-toast";
-import privSplitAbi from "../contracts/PrivSplit.abi.json";
 
-export default function SubmitEncrypted({
-  enc,
-  groupName,
-}: {
+interface Props {
   enc: string;
   groupName: string;
-}) {
+}
+
+export default function SubmitEncrypted({ enc, groupName }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     try {
-      if (!(window as any).ethereum) {
-        toast.error("Please install MetaMask!");
-        return;
-      }
-      if (!groupName.trim()) {
-        toast.error("Please enter a group name!");
-        return;
-      }
-      if (!enc) {
-        toast.error("No encrypted data found!");
+      if (!window.ethereum) {
+        toast.error("MetaMask not found 🦊");
         return;
       }
 
-      setLoading(true);
-      const provider = new ethers.BrowserProvider((window as any).ethereum);
+      const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
+      // ✅ Örnek kontrat adresi
       const contractAddress = process.env.NEXT_PUBLIC_PRIVSPLIT_ADDRESS;
-      const contract = new ethers.Contract(contractAddress!, privSplitAbi, signer);
+      if (!contractAddress) {
+        toast.error("Contract address missing in .env.local ⚠️");
+        return;
+      }
 
-      const groupId = ethers.encodeBytes32String(groupName.trim());
+      // ✅ Basit ABI (örnek fonksiyon)
+      const abi = [
+        "function submitEncrypted(string memory group, string memory payload) public returns (bool)"
+      ];
 
-      toast.loading("🚀 Sending transaction...");
-      const tx = await contract.submitShare(groupId, enc);
+      const contract = new ethers.Contract(contractAddress, abi, signer);
+
+      setLoading(true);
+      toast.loading("Submitting encrypted data to blockchain... 🚀");
+
+      const tx = await contract.submitEncrypted(groupName, enc);
       await tx.wait();
 
       toast.dismiss();
-      toast.success("✅ Encrypted share submitted!");
+      toast.success("Transaction confirmed on blockchain ✅");
+
+      console.log("TX hash:", tx.hash);
     } catch (err: any) {
-      console.error(err);
       toast.dismiss();
-      toast.error(`❌ ${err.message || "Transaction failed"}`);
+      console.error(err);
+      toast.error(err.message || "Transaction failed ❌");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        style={{
-          backgroundColor: loading ? "#aaa" : "#0070f3",
-          color: "white",
-          padding: "10px 16px",
-          border: "none",
-          borderRadius: 8,
-          cursor: loading ? "not-allowed" : "pointer",
-          fontSize: "1rem",
-        }}
-      >
-        {loading ? "⏳ Submitting..." : "🚀 Submit to Blockchain"}
-      </button>
-    </div>
+    <button
+      onClick={handleSubmit}
+      disabled={loading}
+      style={{
+        background: loading ? "#94a3b8" : "#3b82f6",
+        color: "white",
+        padding: "10px 18px",
+        border: "none",
+        borderRadius: 8,
+        fontWeight: 600,
+        cursor: loading ? "not-allowed" : "pointer",
+        transition: "all 0.25s ease",
+      }}
+    >
+      {loading ? "⏳ Waiting for confirmation..." : "🚀 Submit to Blockchain"}
+    </button>
   );
 }
