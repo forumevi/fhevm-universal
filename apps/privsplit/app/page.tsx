@@ -1,89 +1,124 @@
 "use client";
 
-import { FHEProvider, useEncryptedState } from "@fhevm-universal/react";
+import React, { useState } from "react";
 import SubmitEncrypted from "../components/SubmitEncrypted";
+import WalletConnect from "../components/WalletConnect";
+import toast, { Toaster } from "react-hot-toast";
 
-function SplitForm() {
-  const { plain, setPlain, enc } = useEncryptedState(100);
+export default function Page() {
+  const [value, setValue] = useState("");
+  const [enc, setEnc] = useState("");
+  const [address, setAddress] = useState<string | null>(null);
+  const [groupName, setGroupName] = useState("");
 
   const handleEncrypt = () => {
-    alert(`Locally encrypted mock:\n\n${enc}`);
+    if (!value) {
+      toast.error("Please enter a contribution amount!");
+      return;
+    }
+
+    const encrypted = "0x" + Buffer.from(value).toString("hex");
+    setEnc(encrypted);
+    toast.success("✅ Locally encrypted (mock)");
   };
 
   return (
-    <div
+    <main
       style={{
-        maxWidth: 560,
-        margin: "60px auto",
-        padding: 24,
-        border: "1px solid #ddd",
-        borderRadius: 12,
-        boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
-        fontFamily: "system-ui, sans-serif",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "2rem",
+        gap: "1rem",
+        minHeight: "100vh",
       }}
     >
-      <h1 style={{ fontSize: "1.8rem", marginBottom: 16 }}>💰 PrivSplit dApp (Mock)</h1>
-      <p style={{ color: "#666", marginBottom: 16 }}>
-        Enter your private contribution amount. It will be <b>encrypted locally</b> using the FHE client.
+      <Toaster position="top-right" />
+      <WalletConnect onAddressChange={setAddress} />
+
+      <h1 style={{ fontSize: "1.5rem", fontWeight: "600" }}>💰 PrivSplit dApp (Mock)</h1>
+
+      <p style={{ color: "#666" }}>
+        Enter your private contribution amount. It will be{" "}
+        <b>encrypted locally</b> using the FHE client.
       </p>
 
-      <label style={{ display: "block", marginBottom: 10 }}>
-        💵 <b>Contribution (amount in tokens):</b>
+      {/* 🧩 Group ID */}
+      <label style={{ width: "100%", maxWidth: 400 }}>
+        Group name:
+        <input
+          type="text"
+          placeholder="e.g. Team Alpha"
+          value={groupName}
+          onChange={(e) => setGroupName(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "8px",
+            borderRadius: 6,
+            border: "1px solid #ccc",
+            marginTop: 4,
+            marginBottom: 12,
+          }}
+        />
       </label>
-      <input
-        type="number"
-        placeholder="e.g. 100"
-        value={plain}
-        onChange={(e) => setPlain(parseInt(e.target.value || "0", 10))}
-        style={{
-          width: "100%",
-          padding: "8px 10px",
-          border: "1px solid #ccc",
-          borderRadius: 6,
-          marginBottom: 12,
-        }}
-      />
+
+      <label style={{ width: "100%", maxWidth: 400 }}>
+        Contribution (amount in tokens):
+        <input
+          type="number"
+          placeholder="e.g. 100"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "8px",
+            borderRadius: 6,
+            border: "1px solid #ccc",
+            marginTop: 4,
+          }}
+        />
+      </label>
 
       <button
         onClick={handleEncrypt}
         style={{
-          background: "#0070f3",
+          backgroundColor: "#0070f3",
           color: "white",
+          padding: "8px 12px",
           border: "none",
-          borderRadius: 8,
+          borderRadius: 6,
           cursor: "pointer",
-          padding: "8px 14px",
-          fontWeight: 500,
+          fontSize: "1rem",
         }}
       >
-        🔐 Encrypt
+        🔒 Encrypt
       </button>
 
-      <div style={{ marginTop: 20 }}>
-        <p>Encrypted payload:</p>
-        <code
-          style={{
-            display: "block",
-            wordBreak: "break-all",
-            background: "#f9f9f9",
-            padding: 12,
-            borderRadius: 8,
-            border: "1px solid #eee",
-          }}
-        >
-          {enc}
-        </code>
-      </div>
+      {enc && (
+        <div style={{ width: "100%", maxWidth: 400 }}>
+          <p>Encrypted payload:</p>
+          <input
+            type="text"
+            value={enc}
+            readOnly
+            style={{
+              width: "100%",
+              padding: "8px",
+              borderRadius: 6,
+              border: "1px solid #ddd",
+            }}
+          />
 
-      <SubmitEncrypted enc={enc} />
-    </div>
-  );
-}
-
-export default function Page() {
-  return (
-    <FHEProvider config={{ rpcUrl: "https://rpc.zama.dev", chainId: 11155111 }}>
-      <SplitForm />
-    </FHEProvider>
+          {/* 🔥 Sadece wallet bağlıysa gönderme butonu görünür */}
+          {address ? (
+            <SubmitEncrypted enc={enc} groupName={groupName} />
+          ) : (
+            <p style={{ color: "#888", textAlign: "center", marginTop: "1rem" }}>
+              🦊 Connect your wallet to send encrypted data.
+            </p>
+          )}
+        </div>
+      )}
+    </main>
   );
 }
