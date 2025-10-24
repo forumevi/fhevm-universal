@@ -80,7 +80,7 @@ export default function Page() {
             using <b>Fully Homomorphic Encryption (FHE)</b> and wallet
             connection.
             <br />
-            You can try it safely — no real funds are used. Your contribution is
+            You can try it safely  no real funds are used. Your contribution is
             a <b>mock encrypted number</b> sent to a demo smart contract on the{" "}
             <b>Sepolia test network</b>.
           </p>
