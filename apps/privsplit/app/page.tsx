@@ -1,96 +1,89 @@
 "use client";
 
-import React, { useState } from "react";
+import { FHEProvider, useEncryptedState } from "@fhevm-universal/react";
 import SubmitEncrypted from "../components/SubmitEncrypted";
-import WalletConnect from "../components/WalletConnect";
 
-export default function Page() {
-  const [value, setValue] = useState("");
-  const [enc, setEnc] = useState("");
-  const [address, setAddress] = useState<string | null>(null);
+function SplitForm() {
+  const { plain, setPlain, enc } = useEncryptedState(100);
 
   const handleEncrypt = () => {
-    // mock encryption (örnek olarak)
-    const encrypted = "0x" + Buffer.from(value).toString("hex");
-    setEnc(encrypted);
+    alert(`Locally encrypted mock:\n\n${enc}`);
   };
 
   return (
-    <main
+    <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "2rem",
-        gap: "1rem",
-        minHeight: "100vh",
+        maxWidth: 560,
+        margin: "60px auto",
+        padding: 24,
+        border: "1px solid #ddd",
+        borderRadius: 12,
+        boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
+        fontFamily: "system-ui, sans-serif",
       }}
     >
-      <WalletConnect onAddressChange={setAddress} />
-
-      <h1 style={{ fontSize: "1.5rem", fontWeight: "600" }}>💰 PrivSplit dApp (Mock)</h1>
-
-      <p style={{ color: "#666" }}>
-        Enter your private contribution amount. It will be{" "}
-        <b>encrypted locally</b> using the FHE client.
+      <h1 style={{ fontSize: "1.8rem", marginBottom: 16 }}>💰 PrivSplit dApp (Mock)</h1>
+      <p style={{ color: "#666", marginBottom: 16 }}>
+        Enter your private contribution amount. It will be <b>encrypted locally</b> using the FHE client.
       </p>
 
-      <label style={{ width: "100%", maxWidth: 400 }}>
-        Contribution:
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "8px",
-            borderRadius: 6,
-            border: "1px solid #ccc",
-            marginTop: 4,
-          }}
-        />
+      <label style={{ display: "block", marginBottom: 10 }}>
+        💵 <b>Contribution (amount in tokens):</b>
       </label>
+      <input
+        type="number"
+        placeholder="e.g. 100"
+        value={plain}
+        onChange={(e) => setPlain(parseInt(e.target.value || "0", 10))}
+        style={{
+          width: "100%",
+          padding: "8px 10px",
+          border: "1px solid #ccc",
+          borderRadius: 6,
+          marginBottom: 12,
+        }}
+      />
 
       <button
         onClick={handleEncrypt}
         style={{
-          backgroundColor: "#0070f3",
+          background: "#0070f3",
           color: "white",
-          padding: "8px 12px",
           border: "none",
-          borderRadius: 6,
+          borderRadius: 8,
           cursor: "pointer",
-          fontSize: "1rem",
+          padding: "8px 14px",
+          fontWeight: 500,
         }}
       >
-        🔒 Encrypt
+        🔐 Encrypt
       </button>
 
-      {enc && (
-        <div style={{ width: "100%", maxWidth: 400 }}>
-          <p>Encrypted payload:</p>
-          <input
-            type="text"
-            value={enc}
-            readOnly
-            style={{
-              width: "100%",
-              padding: "8px",
-              borderRadius: 6,
-              border: "1px solid #ddd",
-            }}
-          />
+      <div style={{ marginTop: 20 }}>
+        <p>Encrypted payload:</p>
+        <code
+          style={{
+            display: "block",
+            wordBreak: "break-all",
+            background: "#f9f9f9",
+            padding: 12,
+            borderRadius: 8,
+            border: "1px solid #eee",
+          }}
+        >
+          {enc}
+        </code>
+      </div>
 
-          {/* 🔥 Burada sadece cüzdan bağlıysa gönderme butonu görünür */}
-          {address ? (
-            <SubmitEncrypted enc={enc} />
-          ) : (
-            <p style={{ color: "#888", textAlign: "center", marginTop: "1rem" }}>
-              🦊 Connect your wallet to send encrypted data.
-            </p>
-          )}
-        </div>
-      )}
-    </main>
+      <SubmitEncrypted enc={enc} />
+    </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <FHEProvider config={{ rpcUrl: "https://rpc.zama.dev", chainId: 11155111 }}>
+      <SplitForm />
+    </FHEProvider>
   );
 }
