@@ -1,8 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { BrowserProvider, Contract } from "ethers";
+import { ethers } from "ethers";
 import toast from "react-hot-toast";
-import abi from "../contracts/PrivSplit.abi.json";
+import privSplitAbiJson from "../contracts/PrivSplit.abi.json";
+
+const privSplitAbi = privSplitAbiJson.abi || privSplitAbiJson;
 
 interface Props {
   enc: string;
@@ -19,11 +21,11 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
         return;
       }
 
-      // 🔑 Kullanıcı cüzdanını bağlamaya zorla
+      // 🔑 MetaMask bağlantı isteğini tetikler (popup garanti)
       await window.ethereum.request({ method: "eth_requestAccounts" });
 
-      const provider = new BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
 
       const contractAddress = process.env.NEXT_PUBLIC_PRIVSPLIT_ADDRESS;
       if (!contractAddress) {
@@ -31,13 +33,12 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
         return;
       }
 
-      const contract = new Contract(contractAddress, abi, signer);
+      const contract = new ethers.Contract(contractAddress, privSplitAbi, signer);
 
+      const groupId = "0x" + Buffer.from(groupName).toString("hex").padEnd(64, "0");
       setLoading(true);
       toast.loading("📡 Sending encrypted share...");
 
-      // örnek veri
-      const groupId = "0x" + Buffer.from(groupName).toString("hex").padEnd(64, "0");
       const tx = await contract.submitShare(groupId, enc);
 
       toast.success("✅ Transaction sent! Waiting for confirmation...");
@@ -45,7 +46,7 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
 
       toast.success(
         <>
-          🎉 Transaction confirmed!<br />
+          🎉 Transaction confirmed! <br />
           <a
             href={`https://etherscan.io/tx/${tx.hash}`}
             target="_blank"
