@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import { abi as privSplitAbi } from "../contracts/PrivSplit.abi.json"; // (see note)
+import privSplitAbi from "../contracts/PrivSplit.abi.json";
+ // (see note)
 
 export default function SubmitEncrypted({ enc }: { enc: string }) {
   const [loading, setLoading] = useState(false);
