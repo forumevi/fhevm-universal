@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+// apps/privsplit/app/layout.tsx
+import React, { type ReactNode } from "react";
 
 export const metadata = {
   title: "PrivSplit dApp (Mock)",
