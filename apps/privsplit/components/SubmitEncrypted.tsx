@@ -2,83 +2,69 @@
 
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import privSplitAbi from "../contracts/PrivSplit.abi.json"; // ✅ düzeltildi
+import toast, { Toaster } from "react-hot-toast";
+import { abi as privSplitAbi } from "../contracts/PrivSplit.abi.json";
 
 export default function SubmitEncrypted({ enc }: { enc: string }) {
-  const [status, setStatus] = useState<string>("idle");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     try {
-      setStatus("connecting");
-
       if (!(window as any).ethereum) {
-        alert("No wallet detected. Please install MetaMask or another Web3 wallet.");
-        setStatus("error");
+        toast.error("🦊 Please install MetaMask first.");
         return;
       }
 
-      // 1️⃣ Cüzdan bağlantısı
+      setSubmitting(true);
+      toast.loading("🔐 Submitting encrypted data...");
+
       const provider = new ethers.BrowserProvider((window as any).ethereum);
       const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-      console.log("Connected wallet:", address);
 
-      setStatus("submitting");
+      const contractAddress = process.env.NEXT_PUBLIC_PRIVSPLIT_ADDRESS;
+      if (!contractAddress) throw new Error("Missing contract address!");
 
-      // 2️⃣ (isteğe bağlı) kontrat adresi ENV’den okunur
-      const contractAddress =
-        process.env.NEXT_PUBLIC_PRIVSPLIT_ADDRESS ||
-        "0x0000000000000000000000000000000000000000"; // demo address
-
-      // 3️⃣ kontrat objesi oluşturuluyor
       const contract = new ethers.Contract(contractAddress, privSplitAbi, signer);
 
-      // 4️⃣ blockchain’e sahte işlem (mock)
-      console.log("Mock tx: sending encrypted payload:", enc);
-      // Gerçek olsaydı -> await contract.submitEncrypted(enc);
+      // 🧠 Gerçek kontrat çağrısı
+      const tx = await contract.submitEncrypted(enc);
+      toast.loading("📡 Waiting for confirmation...");
 
-      alert(`Encrypted payload sent!\n\n${enc.slice(0, 80)}...`);
+      await tx.wait();
+      toast.dismiss();
+      toast.success("✅ Transaction confirmed on blockchain!");
 
-      setStatus("success");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Error submitting encrypted data.");
-      setStatus("error");
+      toast.dismiss();
+      toast.error(`❌ Transaction failed: ${err.message}`);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div style={{ marginTop: 32, textAlign: "center" }}>
+    <div style={{ marginTop: "1.5rem" }}>
+      <Toaster position="top-right" />
       <button
         onClick={handleSubmit}
+        disabled={submitting}
         style={{
-          padding: "10px 20px",
+          width: "100%",
+          padding: "10px 16px",
           borderRadius: 8,
-          background:
-            status === "success"
-              ? "#22c55e"
-              : status === "error"
-              ? "#ef4444"
-              : "#111827",
+          background: submitting ? "#aaa" : "#0070f3",
           color: "white",
           border: "none",
-          cursor: "pointer",
+          fontSize: "1rem",
+          cursor: submitting ? "not-allowed" : "pointer",
           transition: "0.2s",
         }}
       >
-        {status === "connecting"
-          ? "🔗 Connecting..."
-          : status === "submitting"
-          ? "⏳ Submitting..."
-          : status === "success"
-          ? "✅ Submitted"
-          : status === "error"
-          ? "❌ Retry"
-          : "📡 Send to Blockchain (mock)"}
+        {submitting ? "⏳ Submitting..." : "🚀 Send to Blockchain"}
       </button>
-
-      <p style={{ marginTop: 10, fontSize: "0.9rem", color: "#666" }}>
-        (mock transaction – no real gas used)
+      <p style={{ fontSize: "0.8rem", color: "#777", textAlign: "center", marginTop: "6px" }}>
+        (uses real MetaMask transaction)
       </p>
     </div>
   );
