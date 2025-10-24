@@ -3,49 +3,34 @@ import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import toast from "react-hot-toast";
 
-declare global {
-  interface Window {
-    ethereum?: any;
-  }
-}
-
-export default function WalletConnect({
-  onAddressChange,
-}: {
-  onAddressChange?: (address: string | null) => void;
-}) {
+export default function WalletConnect({ onAddressChange }: { onAddressChange?: (address: string | null) => void }) {
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string>("");
 
   useEffect(() => {
-    if (!window.ethereum) return;
+    if (typeof window === "undefined" || !window.ethereum) return;
 
-    const handleAccountsChanged = (accounts: string[]) => {
+    // 🦊 MetaMask değişiklik olayları
+    window.ethereum.on("accountsChanged", (accounts: string[]) => {
       const newAddr = accounts.length > 0 ? accounts[0] : null;
       setAddress(newAddr);
       if (onAddressChange) onAddressChange(newAddr);
-    };
+    });
 
-    const handleChainChanged = () => window.location.reload();
-
-    window.ethereum.on("accountsChanged", handleAccountsChanged);
-    window.ethereum.on("chainChanged", handleChainChanged);
-
-    return () => {
-      window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
-      window.ethereum.removeListener("chainChanged", handleChainChanged);
-    };
-  }, [onAddressChange]);
+    window.ethereum.on("chainChanged", () => window.location.reload());
+  }, []);
 
   const connectWallet = async () => {
     try {
+      if (typeof window === "undefined") return;
       if (!window.ethereum) {
         toast.error("🦊 MetaMask not found!");
         return;
       }
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []); // 🔑 Popup garantili
+      // 🔑 Popup garantili bağlantı
+      const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+      await provider.send("eth_requestAccounts", []); // <-- popup garantisi
 
       const signer = provider.getSigner();
       const userAddress = await signer.getAddress();
@@ -53,13 +38,11 @@ export default function WalletConnect({
 
       setAddress(userAddress);
       setNetwork(networkInfo.name || "Unknown");
-      onAddressChange?.(userAddress);
 
-      toast.success(
-        `✅ Connected: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`
-      );
+      if (onAddressChange) onAddressChange(userAddress);
+      toast.success(`✅ Connected: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`);
     } catch (err: any) {
-      console.error(err);
+      console.error("Wallet connection error:", err);
       toast.error("❌ Wallet connection failed");
     }
   };
@@ -67,7 +50,7 @@ export default function WalletConnect({
   const disconnectWallet = () => {
     setAddress(null);
     setNetwork("");
-    onAddressChange?.(null);
+    if (onAddressChange) onAddressChange(null);
     toast("👋 Wallet disconnected");
   };
 
@@ -95,7 +78,6 @@ export default function WalletConnect({
               borderRadius: 6,
               padding: "6px 10px",
               cursor: "pointer",
-              fontWeight: 600,
             }}
           >
             Disconnect
@@ -111,7 +93,6 @@ export default function WalletConnect({
             borderRadius: 6,
             padding: "6px 12px",
             cursor: "pointer",
-            fontWeight: 600,
           }}
         >
           🦊 Connect Wallet
