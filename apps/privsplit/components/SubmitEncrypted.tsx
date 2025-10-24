@@ -2,10 +2,16 @@
 
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import privSplitAbi from "../contracts/PrivSplit.abi.json";
 
-export default function SubmitEncrypted({ enc }: { enc: string }) {
+export default function SubmitEncrypted({
+  enc,
+  groupName,
+}: {
+  enc: string;
+  groupName: string;
+}) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -14,37 +20,34 @@ export default function SubmitEncrypted({ enc }: { enc: string }) {
         toast.error("Please install MetaMask!");
         return;
       }
+      if (!groupName.trim()) {
+        toast.error("Please enter a group name!");
+        return;
+      }
+      if (!enc) {
+        toast.error("No encrypted data found!");
+        return;
+      }
 
       setLoading(true);
       const provider = new ethers.BrowserProvider((window as any).ethereum);
       const signer = await provider.getSigner();
 
       const contractAddress = process.env.NEXT_PUBLIC_PRIVSPLIT_ADDRESS;
-      if (!contractAddress) {
-        toast.error("❌ Missing contract address in environment variables!");
-        setLoading(false);
-        return;
-      }
+      const contract = new ethers.Contract(contractAddress!, privSplitAbi, signer);
 
-      const contract = new ethers.Contract(contractAddress, privSplitAbi, signer);
+      const groupId = ethers.encodeBytes32String(groupName.trim());
 
-      // 📦 kontrattaki fonksiyonun adı: submitShare
-      // ilk parametre groupId (örnek olarak sabit verdik)
-      // ikinci parametre ise enc (encrypted value)
-      const dummyGroupId =
-        "0x0000000000000000000000000000000000000000000000000000000000000001"; // örnek groupId
-
-      toast.loading("⏳ Sending encrypted share...");
-
-      const tx = await contract.submitShare(dummyGroupId, enc);
+      toast.loading("🚀 Sending transaction...");
+      const tx = await contract.submitShare(groupId, enc);
       await tx.wait();
 
       toast.dismiss();
-      toast.success("✅ Encrypted share successfully submitted!");
+      toast.success("✅ Encrypted share submitted!");
     } catch (err: any) {
       console.error(err);
       toast.dismiss();
-      toast.error(`Error: ${err.message || "Transaction failed"}`);
+      toast.error(`❌ ${err.message || "Transaction failed"}`);
     } finally {
       setLoading(false);
     }
@@ -52,23 +55,20 @@ export default function SubmitEncrypted({ enc }: { enc: string }) {
 
   return (
     <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
-      <Toaster position="top-right" />
-
       <button
         onClick={handleSubmit}
         disabled={loading}
         style={{
-          backgroundColor: loading ? "#ccc" : "#0070f3",
+          backgroundColor: loading ? "#aaa" : "#0070f3",
           color: "white",
           padding: "10px 16px",
-          borderRadius: 8,
           border: "none",
+          borderRadius: 8,
           cursor: loading ? "not-allowed" : "pointer",
           fontSize: "1rem",
-          transition: "all 0.2s ease-in-out",
         }}
       >
-        {loading ? "🚀 Submitting..." : "🚀 Submit (mock contract call)"}
+        {loading ? "⏳ Submitting..." : "🚀 Submit to Blockchain"}
       </button>
     </div>
   );
