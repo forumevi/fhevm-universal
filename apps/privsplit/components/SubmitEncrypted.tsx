@@ -2,9 +2,7 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import toast from "react-hot-toast";
-import privSplitAbiJson from "../contracts/PrivSplit.abi.json";
-
-const privSplitAbi = privSplitAbiJson.abi || privSplitAbiJson;
+import privSplitAbi from "../contracts/PrivSplit.abi.json";
 
 interface Props {
   enc: string;
@@ -21,7 +19,7 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
         return;
       }
 
-      // 🔑 MetaMask bağlantı isteğini tetikler (popup garanti)
+      // 🔑 Popup açar
       await window.ethereum.request({ method: "eth_requestAccounts" });
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
