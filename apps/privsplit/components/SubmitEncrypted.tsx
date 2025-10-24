@@ -3,9 +3,7 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
-import privSplitAbiJson from "../contracts/PrivSplit.abi.json";
-
-const privSplitAbi = privSplitAbiJson.abi || privSplitAbiJson;
+import privSplitAbi from "../contracts/PrivSplit.abi.json";
 
 export default function SubmitEncrypted({ enc }: { enc: string }) {
   const [loading, setLoading] = useState(false);
@@ -30,7 +28,7 @@ export default function SubmitEncrypted({ enc }: { enc: string }) {
 
       const contract = new ethers.Contract(contractAddress, privSplitAbi, signer);
 
-      // Mock call – gerçek contract fonksiyonuna göre güncellenecek
+      // Mock transaction — gerçek fonksiyona göre düzenlenebilir
       const tx = await contract.submitEncrypted(enc);
       toast.loading("⏳ Sending encrypted data...");
       await tx.wait();
