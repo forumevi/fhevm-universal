@@ -1,7 +1,6 @@
 {
-  "rootDirectory": "apps/privsplit",
-  "installCommand": "npx pnpm@8.15.8 install --no-frozen-lockfile",
-  "buildCommand": "npx pnpm@8.15.8 run build",
+  "installCommand": "cd ../../ && npx pnpm@8.15.8 install --no-frozen-lockfile",
+  "buildCommand": "cd ../../apps/privsplit && npx pnpm@8.15.8 run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "env": {
