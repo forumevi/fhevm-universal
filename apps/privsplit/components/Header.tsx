@@ -1,74 +1,64 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import WalletConnect from "./WalletConnect";
-import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
+  const [network, setNetwork] = useState<string>("");
+
+  useEffect(() => {
+    const detectNetwork = async () => {
+      if (typeof window === "undefined" || !window.ethereum) return;
+      try {
+        const { ethers } = await import("ethers");
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const net = await provider.getNetwork();
+        setNetwork(net.name === "homestead" ? "Mainnet" : net.name);
+      } catch (err) {
+        console.error("Network detection error:", err);
+      }
+    };
+    detectNetwork();
+
+    if (window.ethereum) {
+      window.ethereum.on("chainChanged", () => window.location.reload());
+    }
+  }, []);
+
   return (
     <header
       style={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "16px 28px",
-        borderBottom: "1px solid rgba(0,0,0,0.05)",
-        background: "rgba(255,255,255,0.7)",
-        backdropFilter: "blur(12px)",
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
+        padding: "1rem 2rem",
+        background: "#f8f9fa",
+        borderBottom: "1px solid #eaeaea",
       }}
     >
-      {/* 🔹 LOGO ALANI */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          userSelect: "none",
-        }}
-      >
-        <div
-          style={{
-            width: 42,
-            height: 42,
-            borderRadius: 12,
-            background:
-              "linear-gradient(135deg, #0070f3 0%, #38bdf8 100%)",
-            color: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontWeight: 700,
-            fontSize: "1.2rem",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-          }}
-        >
-          ⛓️
-        </div>
+      <h2 style={{ margin: 0 }}>🔐 PrivSplit</h2>
 
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <span style={{ fontWeight: 700, fontSize: "1.1rem" }}>
-            fhevm-universal
-          </span>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        {network && (
           <span
             style={{
-              fontSize: "0.8rem",
-              color: "#64748b",
-              fontWeight: 500,
-              marginTop: -2,
+              background:
+                network.toLowerCase() === "mainnet"
+                  ? "#00b894"
+                  : network.toLowerCase().includes("sepolia")
+                  ? "#0984e3"
+                  : "#b2bec3",
+              color: "white",
+              padding: "4px 10px",
+              borderRadius: 6,
+              fontSize: "0.85rem",
+              fontWeight: 600,
             }}
           >
-            Fully Homomorphic Encryption dApp
+            {network.toUpperCase()}
           </span>
-        </div>
-      </div>
-
-      {/* 🔹 SAĞ TARAFTA TEMA + CÜZDAN */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <ThemeToggle />
+        )}
         <WalletConnect />
       </div>
     </header>
   );
 }
-
