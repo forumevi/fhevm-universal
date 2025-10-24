@@ -45,7 +45,7 @@ export default function Page() {
           textAlign: "center",
         }}
       >
-        <WalletConnect onAddressChange={setAddress} />
+       
 
         <h1
           style={{
