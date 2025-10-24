@@ -19,7 +19,7 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
         return;
       }
 
-      // 🔑 Popup açar
+      // 🔑 Popup garanti
       await window.ethereum.request({ method: "eth_requestAccounts" });
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -76,7 +76,7 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
         border: "none",
         borderRadius: 8,
         cursor: loading ? "not-allowed" : "pointer",
-        fontSize: "1rem",
+        fontSize: "1rem"
       }}
     >
       {loading ? "⏳ Sending..." : "🚀 Submit Encrypted Data"}
