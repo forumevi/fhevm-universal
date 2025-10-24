@@ -1,120 +1,97 @@
+# 🔐 FHEVM Universal — PrivSplit dApp
 
-# 🔐 PrivSplit dApp (Mock)
+> Encrypted contribution demo using **FHE (Fully Homomorphic Encryption)** and **Ethereum wallet connection**, built with **Next.js**, **ethers.js**, and **react-hot-toast**.
 
-> Encrypted contribution demo using **FHE (Fully Homomorphic Encryption)** and **Ethereum wallet connection**.  
-> This is a frontend demo built with **Next.js**, **ethers.js**, and **react-hot-toast**, designed for exploring encrypted data sharing on-chain.
-
----
-
-## ⚙️ Tech Stack
-
-- 🧱 **Framework**: [Next.js 14](https://nextjs.org)
-- ⚡ **Blockchain SDK**: [ethers.js v5.7](https://docs.ethers.io/v5/)
-- 🔒 **Encryption**: Mock FHE (Fully Homomorphic Encryption) workflow
-- 🦊 **Wallet Connection**: MetaMask integration
-- 🧩 **UI Components**: React + TypeScript
-- 🔔 **UX Enhancements**: `react-hot-toast` notifications
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/forumevi/fhevm-universal)
 
 ---
 
-## 📂 Project Structure
+## 🚀 Overview
 
-
-
-apps/
-privsplit/
-app/
-page.tsx # Main UI (Encryption + Submit)
-layout.tsx # Root layout with Header
-components/
-Header.tsx # App header with wallet & network badge
-WalletConnect.tsx # MetaMask connect/disconnect logic
-SubmitEncrypted.tsx# Contract interaction
-contracts/
-PrivSplit.abi.json # Mock contract ABI
-
+This project demonstrates how private data (like contributions) can be **encrypted locally** and securely submitted to a smart contract using **FHE (Fully Homomorphic Encryption)**.  
+It serves as a **frontend template** for privacy-preserving dApps.
 
 ---
 
-## 🚀 Getting Started
+## 🧩 Tech Stack
 
-### 1️⃣ Install dependencies
-```bash
+- ⚡ **Next.js 14** – React-based full-stack framework  
+- 🦊 **ethers.js** – Ethereum wallet & contract interactions  
+- 🔥 **react-hot-toast** – Modern notification system  
+- 🧠 **FHE (Fully Homomorphic Encryption)** – Privacy layer for encrypted data  
+- 💅 **CSS-in-JS inline styles** – Simple, lightweight UI  
+
+---
+
+## 🛠️ Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/forumevi/fhevm-universal.git
+   cd fhevm-universal/apps/privsplit
+Install dependencies
+
+bash
+Kodu kopyala
 pnpm install
+Add environment variables
+Create a .env.local file inside apps/privsplit/ and add:
 
-2️⃣ Set environment variables
-
-Create a file called .env.local inside /apps/privsplit:
-
+bash
+Kodu kopyala
 NEXT_PUBLIC_PRIVSPLIT_ADDRESS=0xYOUR_CONTRACT_ADDRESS_HERE
+Run the app locally
 
+bash
+Kodu kopyala
+pnpm dev
+Build for production
 
-(Use your deployed mock contract address — or a dummy one for frontend demo.)
+bash
+Kodu kopyala
+pnpm build
+pnpm start
+🧪 Example Workflow
+Connect your wallet (MetaMask popup appears 🦊)
 
-3️⃣ Run locally
-pnpm dev --filter privsplit
+Enter a “Contribution” amount (mock data for now)
 
+Encrypt your input locally
 
-Open your browser at http://localhost:3000
+Submit encrypted data to the contract
 
-🦊 Wallet Integration
+🌍 Live Demo
+👉 fhevm-universal.vercel.app
 
-Click "Connect Wallet" to link MetaMask.
+📦 Project Structure
+pgsql
+Kodu kopyala
+apps/
+└── privsplit/
+    ├── app/
+    │   ├── layout.tsx       # Global layout + Header
+    │   └── page.tsx         # Main app page
+    ├── components/
+    │   ├── WalletConnect.tsx
+    │   ├── SubmitEncrypted.tsx
+    │   └── Header.tsx
+    ├── contracts/
+    │   └── PrivSplit.abi.json
+    ├── package.json
+    └── tsconfig.json
+🧠 Future Ideas
+✅ Add real FHE encryption client-side
 
-After encryption, click "Submit Encrypted Data".
+🌐 Deploy onchain contract for live testing
 
-The app will:
+💬 Add support for multiple contribution groups
 
-Trigger MetaMask popup (eth_requestAccounts)
-
-Send a transaction to PrivSplit contract
-
-Show progress & success via react-hot-toast
-
-🧠 Smart Contract (Mock)
-
-PrivSplit.abi.json is a minimal ABI representing:
-
-function submitShare(bytes32 groupId, string enc) external;
-
-
-You can replace it with a real contract address later — the app will auto-connect to it via NEXT_PUBLIC_PRIVSPLIT_ADDRESS.
-
-🖥️ Deployment (Vercel)
-
-Push changes to your GitHub repo
-
-Link the project on Vercel
-
-Add an environment variable:
-
-NEXT_PUBLIC_PRIVSPLIT_ADDRESS=0xYOUR_CONTRACT_ADDRESS_HERE
-
-
-Vercel automatically builds the app via pnpm build.
-
-🌐 Demo Preview (Optional)
-
-Once deployed on Vercel, your live demo will be available at:
-
-https://your-vercel-domain.vercel.app
-
-🧩 Roadmap
-
- Add true FHE computation layer
-
- Support for multi-user encrypted aggregation
-
- Add contract event listeners
-
- UI refinements (network badge, dark mode)
+🔍 Show transaction history with Etherscan links
 
 🧑‍💻 Author
+ForumEvi Labs
+Building open, privacy-first Web3 applications.
+🌐 forumevi.com
 
-ForumEvi
-Frontend / Web3 Developer
-💬 https://github.com/forumevi
-
-🪄 License
-
-MIT License © 2025 ForumEvi
+🪪 License
+MIT © 2025 ForumEvi Labs
