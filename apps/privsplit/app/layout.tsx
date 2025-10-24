@@ -1,16 +1,12 @@
-// apps/privsplit/app/layout.tsx
 import React, { type ReactNode } from "react";
+import Header from "../components/Header";
 
 export const metadata = {
   title: "PrivSplit dApp (Mock)",
-  description: "Encrypted contribution demo using FHE",
+  description: "Encrypted contribution demo using FHE and wallet connection",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body
@@ -18,10 +14,14 @@ export default function RootLayout({
           background: "#f2f5f9",
           minHeight: "100vh",
           margin: 0,
-          padding: 0,
+          fontFamily: "system-ui, sans-serif",
+          color: "#111",
         }}
       >
-        {children}
+        <Header />
+        <main style={{ padding: "40px 20px", maxWidth: 960, margin: "0 auto" }}>
+          {children}
+        </main>
       </body>
     </html>
   );
