@@ -3,33 +3,49 @@ import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import toast from "react-hot-toast";
 
-export default function WalletConnect({ onAddressChange }: { onAddressChange?: (address: string | null) => void }) {
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
+
+export default function WalletConnect({
+  onAddressChange,
+}: {
+  onAddressChange?: (address: string | null) => void;
+}) {
   const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string>("");
 
   useEffect(() => {
-    if (typeof window === "undefined" || !window.ethereum) return;
+    if (!window.ethereum) return;
 
-    // 🦊 MetaMask değişiklik olayları
-    window.ethereum.on("accountsChanged", (accounts: string[]) => {
+    const handleAccountsChanged = (accounts: string[]) => {
       const newAddr = accounts.length > 0 ? accounts[0] : null;
       setAddress(newAddr);
       if (onAddressChange) onAddressChange(newAddr);
-    });
+    };
 
-    window.ethereum.on("chainChanged", () => window.location.reload());
-  }, []);
+    const handleChainChanged = () => window.location.reload();
+
+    window.ethereum.on("accountsChanged", handleAccountsChanged);
+    window.ethereum.on("chainChanged", handleChainChanged);
+
+    return () => {
+      window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
+      window.ethereum.removeListener("chainChanged", handleChainChanged);
+    };
+  }, [onAddressChange]);
 
   const connectWallet = async () => {
     try {
-      if (typeof window === "undefined" || !window.ethereum) {
+      if (!window.ethereum) {
         toast.error("🦊 MetaMask not found!");
         return;
       }
 
-      // Popup garantili bağlantı
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
+      await provider.send("eth_requestAccounts", []); // 🔑 Popup garantili
 
       const signer = provider.getSigner();
       const userAddress = await signer.getAddress();
@@ -37,9 +53,11 @@ export default function WalletConnect({ onAddressChange }: { onAddressChange?: (
 
       setAddress(userAddress);
       setNetwork(networkInfo.name || "Unknown");
+      onAddressChange?.(userAddress);
 
-      if (onAddressChange) onAddressChange(userAddress);
-      toast.success(`✅ Connected: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`);
+      toast.success(
+        `✅ Connected: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`
+      );
     } catch (err: any) {
       console.error(err);
       toast.error("❌ Wallet connection failed");
@@ -49,7 +67,7 @@ export default function WalletConnect({ onAddressChange }: { onAddressChange?: (
   const disconnectWallet = () => {
     setAddress(null);
     setNetwork("");
-    if (onAddressChange) onAddressChange(null);
+    onAddressChange?.(null);
     toast("👋 Wallet disconnected");
   };
 
@@ -77,6 +95,7 @@ export default function WalletConnect({ onAddressChange }: { onAddressChange?: (
               borderRadius: 6,
               padding: "6px 10px",
               cursor: "pointer",
+              fontWeight: 600,
             }}
           >
             Disconnect
@@ -92,6 +111,7 @@ export default function WalletConnect({ onAddressChange }: { onAddressChange?: (
             borderRadius: 6,
             padding: "6px 12px",
             cursor: "pointer",
+            fontWeight: 600,
           }}
         >
           🦊 Connect Wallet
@@ -100,4 +120,3 @@ export default function WalletConnect({ onAddressChange }: { onAddressChange?: (
     </div>
   );
 }
-
