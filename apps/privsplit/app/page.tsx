@@ -144,7 +144,7 @@ export default function Page() {
 
             {address ? (
               <div style={{ textAlign: "center", marginTop: 24 }}>
-                <SubmitEncrypted enc={enc} />
+                <SubmitEncrypted enc={enc} groupName={group} />
               </div>
             ) : (
               <p
