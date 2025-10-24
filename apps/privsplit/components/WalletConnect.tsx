@@ -1,58 +1,97 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
+import toast from "react-hot-toast";
 
-type WalletConnectProps = {
-  onAddressChange?: (address: string | null) => void;
-};
-
-export default function WalletConnect({ onAddressChange }: WalletConnectProps) {
+export default function WalletConnect({ onAddressChange }: { onAddressChange?: (address: string | null) => void }) {
   const [address, setAddress] = useState<string | null>(null);
-  const [chainId, setChainId] = useState<number | null>(null);
+  const [network, setNetwork] = useState<string>("");
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.ethereum) return;
+
+    // 🦊 MetaMask değişiklik olayları
+    window.ethereum.on("accountsChanged", (accounts: string[]) => {
+      const newAddr = accounts.length > 0 ? accounts[0] : null;
+      setAddress(newAddr);
+      if (onAddressChange) onAddressChange(newAddr);
+    });
+
+    window.ethereum.on("chainChanged", () => window.location.reload());
+  }, []);
 
   const connectWallet = async () => {
     try {
-      if (!(window as any).ethereum) {
-        alert("Please install MetaMask!");
+      if (typeof window === "undefined" || !window.ethereum) {
+        toast.error("🦊 MetaMask not found!");
         return;
       }
 
-      const provider = new ethers.BrowserProvider((window as any).ethereum);
-      const accounts = await provider.send("eth_requestAccounts", []);
-      const network = await provider.getNetwork();
+      // Popup garantili bağlantı
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
 
-      setAddress(accounts[0]);
-      setChainId(Number(network.chainId));
+      const signer = provider.getSigner();
+      const userAddress = await signer.getAddress();
+      const networkInfo = await provider.getNetwork();
 
-      if (onAddressChange) onAddressChange(accounts[0]);
-    } catch (err) {
+      setAddress(userAddress);
+      setNetwork(networkInfo.name || "Unknown");
+
+      if (onAddressChange) onAddressChange(userAddress);
+      toast.success(`✅ Connected: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`);
+    } catch (err: any) {
       console.error(err);
-      alert("Connection failed.");
+      toast.error("❌ Wallet connection failed");
     }
   };
 
+  const disconnectWallet = () => {
+    setAddress(null);
+    setNetwork("");
+    if (onAddressChange) onAddressChange(null);
+    toast("👋 Wallet disconnected");
+  };
+
   return (
-    <div style={{ marginBottom: "1rem" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
       {address ? (
-        <div>
-          ✅ Connected:{" "}
-          <span style={{ fontFamily: "monospace" }}>
-            {address.slice(0, 6)}...{address.slice(-4)}
-          </span>{" "}
-          (Chain {chainId})
-        </div>
+        <>
+          <span
+            style={{
+              fontFamily: "monospace",
+              background: "#f0f2f5",
+              padding: "4px 8px",
+              borderRadius: 6,
+              border: "1px solid #ccc",
+            }}
+          >
+            {address.slice(0, 6)}...{address.slice(-4)} ({network})
+          </span>
+          <button
+            onClick={disconnectWallet}
+            style={{
+              background: "#ff5555",
+              color: "white",
+              border: "none",
+              borderRadius: 6,
+              padding: "6px 10px",
+              cursor: "pointer",
+            }}
+          >
+            Disconnect
+          </button>
+        </>
       ) : (
         <button
           onClick={connectWallet}
           style={{
             background: "#0070f3",
-            color: "#fff",
-            padding: "8px 12px",
-            borderRadius: 6,
+            color: "white",
             border: "none",
+            borderRadius: 6,
+            padding: "6px 12px",
             cursor: "pointer",
-            fontSize: "1rem",
           }}
         >
           🦊 Connect Wallet
