@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import WalletConnect from "../components/WalletConnect"; // 👈 eklendi
 import SubmitEncrypted from "../components/SubmitEncrypted";
 import { Toaster, toast } from "react-hot-toast";
 
@@ -42,6 +43,11 @@ export default function Page() {
           textAlign: "center",
         }}
       >
+        {/* 🔌 cüzdan bağlama – sayfa state’ine bağladık */}
+        <div style={{ textAlign: "right", marginBottom: 12 }}>
+          <WalletConnect onAddressChange={setAddress} />
+        </div>
+
         <h1
           style={{
             fontSize: "1.8rem",
