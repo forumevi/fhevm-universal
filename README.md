@@ -102,7 +102,7 @@ apps/
 
 **ForumEvi Labs**  
 Building open, privacy-first Web3 applications.  
-🌐 [forumevi.com](https://forumevi.com)
+🌐 [forumevi](https://forumevi.com)
 
 ---
 
