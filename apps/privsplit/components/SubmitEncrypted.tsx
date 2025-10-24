@@ -14,36 +14,40 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
 
   const handleSubmit = async () => {
     try {
-      if (typeof window === "undefined" || !window.ethereum) {
+      if (typeof window === "undefined" || !(window as any).ethereum) {
         toast.error("🦊 MetaMask not found!");
         return;
       }
 
-      // 🔑 Popup garanti
-      await window.ethereum.request({ method: "eth_requestAccounts" });
+      // 🔑 Popup garantili bağlantı isteği
+      await (window as any).ethereum.request({ method: "eth_requestAccounts" });
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const provider = new ethers.providers.Web3Provider((window as any).ethereum);
       const signer = provider.getSigner();
 
       const contractAddress = process.env.NEXT_PUBLIC_PRIVSPLIT_ADDRESS;
       if (!contractAddress) {
-        toast.error("Contract address missing!");
+        toast.error("❌ Contract address missing!");
         return;
       }
 
       const contract = new ethers.Contract(contractAddress, privSplitAbi, signer);
 
-      const groupId = "0x" + Buffer.from(groupName).toString("hex").padEnd(64, "0");
+      // 🔢 groupName → bytes32
+      const groupId = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(groupName)).padEnd(66, "0");
+
       setLoading(true);
-      toast.loading("📡 Sending encrypted share...");
+      const loadingId = toast.loading("📡 Sending encrypted share...");
 
       const tx = await contract.submitShare(groupId, enc);
 
+      toast.dismiss(loadingId);
       toast.success("✅ Transaction sent! Waiting for confirmation...");
+
       await tx.wait();
 
       toast.success(
-        <>
+        <div>
           🎉 Transaction confirmed! <br />
           <a
             href={`https://etherscan.io/tx/${tx.hash}`}
@@ -53,14 +57,13 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
           >
             View on Etherscan
           </a>
-        </>
+        </div>
       );
     } catch (err: any) {
       console.error(err);
       toast.error(`❌ ${err.message || "Transaction failed"}`);
     } finally {
       setLoading(false);
-      toast.dismiss();
     }
   };
 
@@ -76,7 +79,9 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
         border: "none",
         borderRadius: 8,
         cursor: loading ? "not-allowed" : "pointer",
-        fontSize: "1rem"
+        fontSize: "1rem",
+        fontWeight: 600,
+        transition: "0.3s all",
       }}
     >
       {loading ? "⏳ Sending..." : "🚀 Submit Encrypted Data"}
