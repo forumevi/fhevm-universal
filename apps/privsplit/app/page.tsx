@@ -113,7 +113,7 @@ export default function Page() {
             <li>Connect your wallet (e.g. MetaMask).</li>
             <li>Enter your contribution amount.</li>
             <li>
-              Encrypt and submit — the value stays <b>private</b> 🔒
+              Encrypt and submit  the value stays <b>private</b> 🔒
             </li>
           </ul>
         </div>
