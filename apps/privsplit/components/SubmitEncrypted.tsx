@@ -28,14 +28,22 @@ export default function SubmitEncrypted({ enc }: { enc: string }) {
 
       const contract = new ethers.Contract(contractAddress, privSplitAbi, signer);
 
-      // Mock transaction — gerçek fonksiyona göre düzenlenebilir
-      const tx = await contract.submitEncrypted(enc);
-      toast.loading("⏳ Sending encrypted data...");
+      // 📦 kontrattaki fonksiyonun adı: submitShare
+      // ilk parametre groupId (örnek olarak sabit verdik)
+      // ikinci parametre ise enc (encrypted value)
+      const dummyGroupId =
+        "0x0000000000000000000000000000000000000000000000000000000000000001"; // örnek groupId
+
+      toast.loading("⏳ Sending encrypted share...");
+
+      const tx = await contract.submitShare(dummyGroupId, enc);
       await tx.wait();
 
-      toast.success("✅ Successfully submitted encrypted payload!");
+      toast.dismiss();
+      toast.success("✅ Encrypted share successfully submitted!");
     } catch (err: any) {
       console.error(err);
+      toast.dismiss();
       toast.error(`Error: ${err.message || "Transaction failed"}`);
     } finally {
       setLoading(false);
