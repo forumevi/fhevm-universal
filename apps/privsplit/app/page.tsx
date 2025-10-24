@@ -55,6 +55,70 @@ export default function Page() {
           textAlign: "center",
         }}
       >
+        {/* 📘 Bilgilendirme Kutusu */}
+        <div
+          style={{
+            background: "#e0f2fe",
+            border: "1px solid #bae6fd",
+            padding: "1rem",
+            borderRadius: "12px",
+            marginBottom: "1.5rem",
+            textAlign: "left",
+            color: "#0c4a6e",
+          }}
+        >
+          <h3 style={{ margin: 0 }}>🔐 What is PrivSplit?</h3>
+          <p
+            style={{
+              marginTop: "0.5rem",
+              fontSize: "0.95rem",
+              lineHeight: 1.5,
+            }}
+          >
+            <b>PrivSplit</b> is a demo decentralized app showing how private data
+            can be encrypted in your browser and submitted securely on-chain
+            using <b>Fully Homomorphic Encryption (FHE)</b> and wallet
+            connection.
+            <br />
+            You can try it safely — no real funds are used. Your contribution is
+            a <b>mock encrypted number</b> sent to a demo smart contract on the{" "}
+            <b>Sepolia test network</b>.
+          </p>
+        </div>
+
+        {/* 👣 Mini Rehber */}
+        <div
+          style={{
+            textAlign: "left",
+            background: "#f8fafc",
+            border: "1px solid #e2e8f0",
+            borderRadius: 12,
+            padding: "1rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <h4 style={{ margin: "0 0 0.5rem 0", color: "#1e293b" }}>
+            🧭 How it works
+          </h4>
+          <ul
+            style={{
+              listStyleType: "decimal",
+              margin: 0,
+              paddingLeft: "1.25rem",
+              color: "#334155",
+              fontSize: "0.95rem",
+              lineHeight: 1.6,
+            }}
+          >
+            <li>Connect your wallet (e.g. MetaMask).</li>
+            <li>Enter your contribution amount.</li>
+            <li>
+              Encrypt and submit — the value stays <b>private</b> 🔒
+            </li>
+          </ul>
+        </div>
+
+        {/* Orijinal İçerik */}
         <h1 style={{ fontSize: "1.8rem", fontWeight: 700, color: "#0f172a" }}>
           💰 PrivSplit dApp (Mock)
         </h1>
