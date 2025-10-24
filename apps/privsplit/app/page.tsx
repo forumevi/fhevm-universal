@@ -1,8 +1,6 @@
 "use client";
-
 import React, { useState } from "react";
 import SubmitEncrypted from "../components/SubmitEncrypted";
-import WalletConnect from "../components/WalletConnect";
 import { Toaster, toast } from "react-hot-toast";
 
 export default function Page() {
@@ -29,24 +27,21 @@ export default function Page() {
         alignItems: "center",
         minHeight: "100vh",
         background:
-          "linear-gradient(135deg, #eff6ff 0%, #e0f2fe 25%, #dbeafe 50%, #e0f2fe 75%, #eff6ff 100%)",
+          "linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #f8fafc 100%)",
         padding: "2rem",
       }}
     >
       <div
         style={{
-          background: "rgba(255,255,255,0.75)",
-          backdropFilter: "blur(12px)",
+          background: "white",
           borderRadius: "20px",
-          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+          boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
           padding: "2.5rem",
           width: "100%",
           maxWidth: 480,
           textAlign: "center",
         }}
       >
-       
-
         <h1
           style={{
             fontSize: "1.8rem",
@@ -166,7 +161,6 @@ export default function Page() {
           </div>
         )}
 
-        {/* 🔔 Toast Container */}
         <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       </div>
     </main>
