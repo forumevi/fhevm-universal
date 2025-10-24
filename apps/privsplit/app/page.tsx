@@ -1,6 +1,7 @@
 "use client";
 
 import { FHEProvider, useEncryptedState } from "@fhevm-universal/react";
+import SubmitEncrypted from "../components/SubmitEncrypted";
 
 function SplitForm() {
   const { plain, setPlain, enc } = useEncryptedState(100);
@@ -13,38 +14,38 @@ function SplitForm() {
     <div
       style={{
         maxWidth: 560,
-        margin: "60px auto",
+        margin: "40px auto",
         padding: 24,
         border: "1px solid #ddd",
         borderRadius: 12,
-        boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
-        fontFamily: "system-ui, sans-serif",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+        background: "#fff",
       }}
     >
-      <h1 style={{ fontSize: "1.8rem", marginBottom: 16 }}>
+      <h1 style={{ fontSize: "1.8rem", marginBottom: 16, textAlign: "center" }}>
         💰 PrivSplit dApp (Mock)
       </h1>
-      <p style={{ color: "#666", marginBottom: 16 }}>
-        Enter your (private) contribution amount. It will be encrypted on the
-        client.
+      <p style={{ color: "#555", marginBottom: 16, textAlign: "center" }}>
+        Enter your private contribution amount.  
+        It will be <strong>encrypted locally</strong> using the FHE client.
       </p>
 
-      <label>
-        Contribution (hidden):{" "}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <label style={{ minWidth: 120 }}>Contribution:</label>
         <input
           type="number"
           value={plain}
           onChange={(e) => setPlain(parseInt(e.target.value || "0", 10))}
           style={{
-            marginLeft: 8,
-            padding: "6px 10px",
+            flex: 1,
+            padding: "8px 12px",
             border: "1px solid #ccc",
             borderRadius: 6,
           }}
         />
-      </label>
+      </div>
 
-      <div style={{ marginTop: 20 }}>
+      <div style={{ marginTop: 16 }}>
         <p>Encrypted payload:</p>
         <code
           style={{
@@ -54,6 +55,7 @@ function SplitForm() {
             padding: 12,
             borderRadius: 8,
             border: "1px solid #eee",
+            fontSize: "0.9rem",
           }}
         >
           {enc}
@@ -63,17 +65,21 @@ function SplitForm() {
       <button
         onClick={handleSubmit}
         style={{
-          marginTop: 24,
+          marginTop: 20,
           padding: "10px 18px",
           background: "#0070f3",
           color: "white",
           border: "none",
           borderRadius: 8,
           cursor: "pointer",
+          width: "100%",
         }}
       >
-        🚀 Submit (mock contract call)
+        🚀 Submit (mock)
       </button>
+
+      {/* 🔹 Ek: zincire gönderim butonu (mock / gerçek seçilebilir) */}
+      <SubmitEncrypted enc={enc} />
     </div>
   );
 }
