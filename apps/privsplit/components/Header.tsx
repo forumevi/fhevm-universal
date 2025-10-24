@@ -35,7 +35,7 @@ export default function Header() {
         borderBottom: "1px solid #eaeaea",
       }}
     >
-      <h2 style={{ margin: 0 }}>🔐 PrivSplit</h2>
+      <h2 style={{ margin: 0, color: "#0f172a" }}>🔐 PrivSplit</h2>
 
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
         {network && (
@@ -45,8 +45,8 @@ export default function Header() {
                 network.toLowerCase() === "mainnet"
                   ? "#00b894"
                   : network.toLowerCase().includes("sepolia")
-                  ? "#0984e3"
-                  : "#b2bec3",
+                  ? "#3b82f6"
+                  : "#94a3b8",
               color: "white",
               padding: "4px 10px",
               borderRadius: 6,
