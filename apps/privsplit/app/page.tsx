@@ -1,6 +1,5 @@
 "use client";
-import React, { useState } from "react";
-import WalletConnect from "../components/WalletConnect"; // 👈 eklendi
+import React, { useState, useEffect } from "react";
 import SubmitEncrypted from "../components/SubmitEncrypted";
 import { Toaster, toast } from "react-hot-toast";
 
@@ -9,6 +8,19 @@ export default function Page() {
   const [value, setValue] = useState("");
   const [enc, setEnc] = useState("");
   const [address, setAddress] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleConnect = (e: any) => setAddress(e.detail);
+    const handleDisconnect = () => setAddress(null);
+
+    window.addEventListener("walletConnected", handleConnect);
+    window.addEventListener("walletDisconnected", handleDisconnect);
+
+    return () => {
+      window.removeEventListener("walletConnected", handleConnect);
+      window.removeEventListener("walletDisconnected", handleDisconnect);
+    };
+  }, []);
 
   const handleEncrypt = () => {
     if (!value) {
@@ -43,19 +55,7 @@ export default function Page() {
           textAlign: "center",
         }}
       >
-        {/* 🔌 cüzdan bağlama – sayfa state’ine bağladık */}
-        <div style={{ textAlign: "right", marginBottom: 12 }}>
-          <WalletConnect onAddressChange={setAddress} />
-        </div>
-
-        <h1
-          style={{
-            fontSize: "1.8rem",
-            fontWeight: 700,
-            marginTop: "1rem",
-            color: "#0f172a",
-          }}
-        >
+        <h1 style={{ fontSize: "1.8rem", fontWeight: 700, color: "#0f172a" }}>
           💰 PrivSplit dApp (Mock)
         </h1>
 
@@ -80,7 +80,6 @@ export default function Page() {
               border: "1px solid #cbd5e1",
             }}
           />
-
           <label
             style={{
               display: "block",
@@ -116,10 +115,7 @@ export default function Page() {
             borderRadius: 8,
             fontWeight: 600,
             cursor: "pointer",
-            transition: "all 0.25s ease",
           }}
-          onMouseOver={(e) => (e.currentTarget.style.background = "#2563eb")}
-          onMouseOut={(e) => (e.currentTarget.style.background = "#3b82f6")}
         >
           🔒 Encrypt
         </button>
