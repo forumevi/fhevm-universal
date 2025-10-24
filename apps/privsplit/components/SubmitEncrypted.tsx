@@ -24,6 +24,7 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
 
       const provider = new ethers.providers.Web3Provider((window as any).ethereum);
       const signer = provider.getSigner();
+      const network = await provider.getNetwork(); // ✅ Ağ bilgisi eklendi
 
       const contractAddress = process.env.NEXT_PUBLIC_PRIVSPLIT_ADDRESS;
       if (!contractAddress) {
@@ -46,11 +47,18 @@ export default function SubmitEncrypted({ enc, groupName }: Props) {
 
       await tx.wait();
 
+      // 🌐 Dinamik Etherscan URL seçimi
+      let explorerBase = "https://etherscan.io";
+      if (network.chainId === 11155111) explorerBase = "https://sepolia.etherscan.io";
+      else if (network.chainId === 5) explorerBase = "https://goerli.etherscan.io";
+      else if (network.chainId === 11155420) explorerBase = "https://optimism-sepolia.etherscan.io";
+      else if (network.chainId === 80001) explorerBase = "https://mumbai.polygonscan.com";
+
       toast.success(
         <div>
           🎉 Transaction confirmed! <br />
           <a
-            href={`https://etherscan.io/tx/${tx.hash}`}
+            href={`${explorerBase}/tx/${tx.hash}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: "#0070f3", textDecoration: "underline" }}
