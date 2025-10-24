@@ -1,12 +1,23 @@
 export const metadata = {
-  title: 'PrivSplit Demo',
-  description: 'Simple Next.js demo page'
+  title: "PrivSplit dApp (Mock)",
+  description: "Encrypted contribution demo using FHE",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body>
+      <body
+        style={{
+          background: "#f2f5f9",
+          minHeight: "100vh",
+          margin: 0,
+          padding: 0,
+        }}
+      >
         {children}
       </body>
     </html>
