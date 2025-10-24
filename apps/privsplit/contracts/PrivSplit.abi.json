@@ -1,0 +1,12 @@
+[
+  {
+    "inputs": [
+      { "internalType": "bytes32","name":"groupId","type":"bytes32" },
+      { "internalType": "bytes","name":"encryptedAmount","type":"bytes" }
+    ],
+    "name": "submitShare",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
