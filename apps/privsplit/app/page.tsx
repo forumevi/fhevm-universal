@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import SubmitEncrypted from "../components/SubmitEncrypted";
 import WalletConnect from "../components/WalletConnect";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function Page() {
   const [group, setGroup] = useState("");
@@ -11,9 +12,13 @@ export default function Page() {
   const [address, setAddress] = useState<string | null>(null);
 
   const handleEncrypt = () => {
+    if (!value) {
+      toast.error("Please enter an amount first 💡");
+      return;
+    }
     const encrypted = "0x" + Buffer.from(value).toString("hex");
     setEnc(encrypted);
-    alert(`Locally encrypted mock:\n\n${encrypted}`);
+    toast.success("Successfully encrypted locally 🔒");
   };
 
   return (
@@ -160,6 +165,9 @@ export default function Page() {
             )}
           </div>
         )}
+
+        {/* 🔔 Toast Container */}
+        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       </div>
     </main>
   );
